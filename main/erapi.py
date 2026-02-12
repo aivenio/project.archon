@@ -40,10 +40,16 @@ if __name__ == "__main__":
     USERNAME = os.environ["AIVENIO_MACRODB_USERNAME"]
 
     engine = sa.create_engine(
-        f"postgresql://{USERNAME}:{PASSWORD}@{DATABASE}:{PORTNAME}/{DATABASE}"
+        f"postgresql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORTNAME}/{DATABASE}"
     )
 
-    logger.info("Engine created to a PostgreSQL database")
+    try:
+        engine.connect()
+    except Exception as err:
+        logger.critical(f"Cannot connect to database. Error: {err}")
+    else:
+        logger.info(f"Connection established to {DATABASE}")
+
 
     # get the last available date from the database, and then set a
     # context to fetch the date period for which data is required
