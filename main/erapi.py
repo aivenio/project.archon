@@ -39,49 +39,42 @@ if __name__ == "__main__":
     PORTNAME = os.environ["AIVENIO_MACRODB_PORTNAME"]
     USERNAME = os.environ["AIVENIO_MACRODB_USERNAME"]
 
-    logger.info(f"DB: {DATABASE}")
+    engine = sa.create_engine(
+        f"postgresql://{USERNAME}:{PASSWORD}@{DATABASE}:{PORTNAME}/{DATABASE}"
+    )
 
-    # engine = sa.create_engine(
-    #     f"postgresql://{USERNAME}:{PASSWORD}@{DATABASE}:{PORTNAME}/{DATABASE}"
-    # )
+    logger.info("Engine created to a PostgreSQL database")
 
-    # try:
-    #     engine.connect()
-    # except Exception as err:
-    #     logger.critical(f"Cannot connect to database. Error: {err}")
-    # else:
-    #     logger.info("Connection Established to MacroDB for AivenIO")
+    # get the last available date from the database, and then set a
+    # context to fetch the date period for which data is required
+    statement = """
+        SELECT MAX(effective_date)::DATE AS last_date
+        FROM common.forex_rate_tx
+    """
 
-    # # get the last available date from the database, and then set a
-    # # context to fetch the date period for which data is required
-    # statement = """
-    #     SELECT MAX(effective_date)::DATE AS last_date
-    #     FROM common.forex_rate_tx
-    # """
+    start_date = [
+        dict(row) for row in engine.execute(statement)
+    ][0]["last_date"] + dt.timedelta(days = 1) # set to the next date
 
-    # start_date = [
-    #     dict(row) for row in engine.execute(statement)
-    # ][0]["last_date"] + dt.timedelta(days = 1) # set to the next date
+    last_date = dt.datetime.now().date() - dt.timedelta(days = 1)
+    dates = list(dt_.date_range(start = start_date, end = last_date))
 
-    # last_date = dt.datetime.now().date() - dt.timedelta(days = 1)
-    # dates = list(dt_.date_range(start = start_date, end = last_date))
+    logger.info(f"Trying to fetch data from {start_date} to {last_date}")
+    logger.info(f"This will consume {len(dates):,} calls for the API")
 
-    # logger.info(f"Trying to fetch data from {start_date} to {last_date}")
-    # logger.info(f"This will consume {len(dates):,} calls for the API")
+    data = [
+        forexrates.api.ExchangeRatesAPI(
+            apikey = API_KEY, endpoint = date.strftime("%Y-%m-%d")
+        ).get(
+            verify = False, suppresswarning = True
+        ) for date in dates
+    ]
 
-    # data = [
-    #     forexrates.api.ExchangeRatesAPI(
-    #         apikey = API_KEY, endpoint = date.strftime("%Y-%m-%d")
-    #     ).get(
-    #         verify = False, suppresswarning = True
-    #     ) for date in dates
-    # ]
-
-    # parser = forexrates.io.dataframe.ExchangeRatesIO(data)
-    # dataframe = parser.dataframe(
-    #     index = "exchange_rate", verbose = True
-    # )
-    # dataframe["data_source_id"] = "ERAPI"
-    # dataframe.to_sql(
-    #     "forex_rate_tx", engine, schema = "common", if_exists = "append", index = False
-    # )
+    parser = forexrates.io.dataframe.ExchangeRatesIO(data)
+    dataframe = parser.dataframe(
+        index = "exchange_rate", verbose = True
+    )
+    dataframe["data_source_id"] = "ERAPI"
+    dataframe.to_sql(
+        "forex_rate_tx", engine, schema = "common", if_exists = "append", index = False
+    )
