@@ -1,0 +1,55 @@
+name: Schedule Data Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository Content
+        uses: actions/checkout@v6
+
+      - name: Setup Python v6
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install Python & Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install External/Personal Code Files
+        run: |
+          git clone https://gist.github.com/ZenithClown/d2dd294c5f528459e16b139c04c0b182.git dtutils
+
+      - name: Execute ERAPI Python Script
+        env:
+          AIVENIO_MACRODB_DATABASE: ${{ secrets.AIVENIO_MACRODB_DATABASE }}
+          AIVENIO_MACRODB_HOSTNAME: ${{ secrets.AIVENIO_MACRODB_HOSTNAME }}
+          AIVENIO_MACRODB_PASSWORD: ${{ secrets.AIVENIO_MACRODB_PASSWORD }}
+          AIVENIO_MACRODB_PORTNAME: ${{ secrets.AIVENIO_MACRODB_PORTNAME }}
+          AIVENIO_MACRODB_USERNAME: ${{ secrets.AIVENIO_MACRODB_USERNAME }}
+          EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
+        run: python main/erapi.py
+
+      - name: Commit Logs to the New File
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
+
+          git add status.log
+          git commit -am "📝 ERAPI Logs Updated" --allow-empty
+
+      - name: Push Changes to the Branch
+        uses: ad-m/github-push-action@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
