@@ -39,15 +39,23 @@ jobs:
           AIVENIO_MACRODB_PORTNAME: ${{ secrets.AIVENIO_MACRODB_PORTNAME }}
           AIVENIO_MACRODB_USERNAME: ${{ secrets.AIVENIO_MACRODB_USERNAME }}
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
-        run: python main/erapi.py
+        run: |
+          python main/erapi.py || {
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." > status.log; exit 1;
+          }
 
       - name: Commit Logs to the New File
         run: |
           git config --local user.name "GitHub Action"
           git config --local user.email "action@github.com"
 
-          git add status.log
-          git commit -am "📝 ERAPI Logs Updated" --allow-empty
+          if ! git diff --quiet HEAD -- status.log; then
+            echo "Writing changes, adding new commit."
+            git add status.log
+            git commit -am "📝 ERAPI Logs Updated" --allow-empty
+          else
+            echo "No changes in current, no commit is made."
+          fi
 
       - name: Push Changes to the Branch
         uses: ad-m/github-push-action@v1.0.0
