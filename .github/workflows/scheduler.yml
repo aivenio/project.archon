@@ -42,7 +42,7 @@ jobs:
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
         run: |
           python main/erapi.py || {
-            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log; exit 1;
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log;
           }
 
       - name: Commit Logs to the New File
