@@ -42,10 +42,8 @@ if __name__ == "__main__":
     USERNAME = os.environ["AIVENIO_MACRODB_USERNAME"]
 
     engine = sa.create_engine(
-        f"postgresql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORTNAME}/{DATABASE}"
+        f"postgresql+psycopg://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORTNAME}/{DATABASE}"
     )
-
-    print(forexrates.__version__)
 
     try:
         engine.connect()
@@ -62,9 +60,11 @@ if __name__ == "__main__":
         FROM common.forex_rate_tx
     """
 
-    start_date = [
-        dict(row) for row in engine.execute(statement)
-    ][0]["last_date"] + dt.timedelta(days = 1) # set to the next date
+    with engine.connect() as connection:
+        start_date = connection.execute(
+            sa.text(statement)
+        ).fetchone()[0]
+        start_date += dt.timedelta(days = 1)
 
     last_date = dt.datetime.now().date() - dt.timedelta(days = 1)
     dates = list(dt_.date_range(start = start_date, end = last_date))
@@ -85,6 +85,12 @@ if __name__ == "__main__":
         index = "exchange_rate", verbose = True
     )
     dataframe["data_source_id"] = "ERAPI"
-    dataframe.to_sql(
-        "forex_rate_tx", engine, schema = "common", if_exists = "append", index = False
-    )
+
+    with engine.connect() as connection:
+        metadata = sa.Table(
+            "forex_rate_tx", sa.MetaData(schema = "common"),
+            autoload_with = connection
+        )
+
+        connection.execute(metadata.insert(), dataframe.to_dict(orient = "records"))
+        connection.commit()
