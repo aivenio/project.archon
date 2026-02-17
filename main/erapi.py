@@ -16,7 +16,9 @@ import datetime as dt
 import sqlalchemy as sa
 
 # append additional files, check actions for more information
-sys.path.append("..")
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), "..")
+)
 sys.path.append("dtutils")
 
 import forexrates # get the module from repository root
@@ -42,6 +44,8 @@ if __name__ == "__main__":
     engine = sa.create_engine(
         f"postgresql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORTNAME}/{DATABASE}"
     )
+
+    print(forexrates.__version__)
 
     try:
         engine.connect()
