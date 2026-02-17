@@ -32,6 +32,7 @@ jobs:
           git clone https://gist.github.com/ZenithClown/d2dd294c5f528459e16b139c04c0b182.git dtutils
 
       - name: Execute ERAPI Python Script
+        continue-on-error: true
         env:
           AIVENIO_MACRODB_DATABASE: ${{ secrets.AIVENIO_MACRODB_DATABASE }}
           AIVENIO_MACRODB_HOSTNAME: ${{ secrets.AIVENIO_MACRODB_HOSTNAME }}
@@ -41,7 +42,7 @@ jobs:
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
         run: |
           python main/erapi.py || {
-            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." > status.log; exit 1;
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log; exit 1;
           }
 
       - name: Commit Logs to the New File
