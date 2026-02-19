@@ -11,8 +11,6 @@ the data using CRON schedulers, or GitHub actions.
 import os
 import sys
 
-import pandas as pd
-import datetime as dt
 import sqlalchemy as sa
 
 # append additional files, check actions for more information
@@ -26,6 +24,7 @@ import forexrates # get the module from repository root
 # https://ds-gringotts.readthedocs.io/en/latest/modules/utils/dtutils.html
 import datetime_ as dt_ # cloned using git, ./dtutils
 
+from utils import getDates
 from config import setLogger
 from config import createEngine
 
@@ -49,25 +48,10 @@ if __name__ == "__main__":
     )
 
 
-    # get the last available date from the database, and then set a
-    # context to fetch the date period for which data is required
-    statement = """
-        SELECT MAX(effective_date)::DATE AS last_date
-        FROM common.forex_rate_tx
-    """
+    # use the utility function to get the dates, log information
+    dates = getDates(engine = engine, logger = logger)
 
-    with engine.connect() as connection:
-        start_date = connection.execute(
-            sa.text(statement)
-        ).fetchone()[0]
-        start_date += dt.timedelta(days = 1)
-
-    last_date = dt.datetime.now().date() - dt.timedelta(days = 1)
-    dates = list(dt_.date_range(start = start_date, end = last_date))
-
-    logger.info(f"Trying to fetch data from {start_date} to {last_date}")
-    logger.info(f"This will consume {len(dates):,} calls for the API")
-
+    # use the forexrates module to fetch the data from the api
     data = [
         forexrates.api.ExchangeRatesAPI(
             apikey = API_KEY, endpoint = date.strftime("%Y-%m-%d")
