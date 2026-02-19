@@ -11,6 +11,7 @@ the data using CRON schedulers, or GitHub actions.
 import os
 import sys
 
+import logging
 import sqlalchemy as sa
 
 # append additional files, check actions for more information
@@ -21,9 +22,6 @@ sys.path.append("dtutils")
 
 import forexrates # get the module from repository root
 
-# https://ds-gringotts.readthedocs.io/en/latest/modules/utils/dtutils.html
-import datetime_ as dt_ # cloned using git, ./dtutils
-
 from utils import getDates
 from config import setLogger
 from config import createEngine
@@ -32,7 +30,8 @@ if __name__ == "__main__":
     API_KEY = os.environ["EXCHANGERATES_IO_API_KEY"]
     
     # create a logger for the erapi module
-    logger = setLogger(name = "ERAPI")
+    setLogger(configfile = "./config/logging.yaml")
+    logger = logging.getLogger("ERAPI")
 
     # get configurations for database connection elements, and build
     DATABASE = os.environ["AIVENIO_MACRODB_DATABASE"]
