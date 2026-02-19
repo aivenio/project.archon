@@ -26,7 +26,8 @@ import forexrates # get the module from repository root
 # https://ds-gringotts.readthedocs.io/en/latest/modules/utils/dtutils.html
 import datetime_ as dt_ # cloned using git, ./dtutils
 
-from config import setLogger # already exists in the current path
+from config import setLogger
+from config import createEngine
 
 if __name__ == "__main__":
     API_KEY = os.environ["EXCHANGERATES_IO_API_KEY"]
@@ -41,16 +42,11 @@ if __name__ == "__main__":
     PORTNAME = os.environ["AIVENIO_MACRODB_PORTNAME"]
     USERNAME = os.environ["AIVENIO_MACRODB_USERNAME"]
 
-    engine = sa.create_engine(
-        f"postgresql+psycopg://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORTNAME}/{DATABASE}"
+    engine = createEngine(
+        host = HOSTNAME, port = PORTNAME,
+        user = USERNAME, password = PASSWORD,
+        database = DATABASE, logger = logger, verbose = False
     )
-
-    try:
-        engine.connect()
-    except Exception as err:
-        logger.critical(f"Cannot connect to database. Error: {err}")
-    else:
-        logger.info(f"Connection established to {DATABASE}")
 
 
     # get the last available date from the database, and then set a
