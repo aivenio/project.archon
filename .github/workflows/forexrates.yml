@@ -1,4 +1,4 @@
-name: Schedule Data Update
+name: Schedule FOREX Data Update
 
 on:
   workflow_dispatch:
