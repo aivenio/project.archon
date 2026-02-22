@@ -30,7 +30,7 @@ jobs:
         run: |
           git clone https://gist.github.com/ZenithClown/d2dd294c5f528459e16b139c04c0b182.git dtutils
 
-      - name: Execute ERAPI Python Script
+      - name: Execute Python Script to Update FOREX Data
         continue-on-error: true
         env:
           AIVENIO_MACRODB_DATABASE: ${{ secrets.AIVENIO_MACRODB_DATABASE }}
@@ -40,7 +40,9 @@ jobs:
           AIVENIO_MACRODB_USERNAME: ${{ secrets.AIVENIO_MACRODB_USERNAME }}
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
         run: |
-          python main/erapi.py || {
+          echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting to update FOREX Rates." >> status.log;
+
+          python main/forexrates.py || {
             echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log;
           }
 
@@ -49,10 +51,26 @@ jobs:
           git config --local user.name "GitHub Action"
           git config --local user.email "action@github.com"
 
+          if ! git diff --quiet HEAD -- ./log/status.log; then
+            echo "Writing changes, adding new commit for ./logs/status.log."
+            git add ./logs/status.log
+            git commit -am "📝 Main Status Logs Updated" --allow-empty
+          else
+            echo "No changes in current, no commit is made."
+          fi
+
+          if ! git diff --quiet HEAD -- ./log/forexrates.log; then
+            echo "Writing changes, adding new commit for ./logs/forexrates.log."
+            git add ./logs/forexrates.log
+            git commit -am "📝 FOREX Rates Logs Updated" --allow-empty
+          else
+            echo "No changes in current, no commit is made."
+          fi
+
           if ! git diff --quiet HEAD -- status.log; then
             echo "Writing changes, adding new commit."
             git add status.log
-            git commit -am "📝 ERAPI Logs Updated" --allow-empty
+            git commit -am "📝 Main Logs Updated" --allow-empty
           else
             echo "No changes in current, no commit is made."
           fi
