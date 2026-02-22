@@ -31,7 +31,6 @@ jobs:
           git clone https://gist.github.com/ZenithClown/d2dd294c5f528459e16b139c04c0b182.git dtutils
 
       - name: Execute Python Script to Update FOREX Data
-        continue-on-error: true
         env:
           AIVENIO_MACRODB_DATABASE: ${{ secrets.AIVENIO_MACRODB_DATABASE }}
           AIVENIO_MACRODB_HOSTNAME: ${{ secrets.AIVENIO_MACRODB_HOSTNAME }}
@@ -79,3 +78,4 @@ jobs:
         uses: ad-m/github-push-action@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
