@@ -79,7 +79,7 @@ if __name__ == "__main__":
     )
 
     # use the utility function to get the dates, log information
-    dates = get_dates(engine = dbobject, logger = forexlogger)
+    dates = get_dates(controller = dbobject, logger = forexlogger)
 
     # use the forexrates module to fetch the data from the api
     data = [
