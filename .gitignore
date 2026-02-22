@@ -229,7 +229,6 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -372,7 +371,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,windows,linux,osx,pycharm,git
-
-### project specific ignores ###
-# ignore all log files, which are saved with an `.log` extension
-*.log
