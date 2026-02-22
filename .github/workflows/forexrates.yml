@@ -38,12 +38,7 @@ jobs:
           AIVENIO_MACRODB_PORTNAME: ${{ secrets.AIVENIO_MACRODB_PORTNAME }}
           AIVENIO_MACRODB_USERNAME: ${{ secrets.AIVENIO_MACRODB_USERNAME }}
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
-        run: |
-          echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting to update FOREX Rates." >> status.log;
-
-          python main/forexrates.py || {
-            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log;
-          }
+        run: python main/forexrates_dbupdate.py
 
       - name: Commit Logs to the New File
         run: |
