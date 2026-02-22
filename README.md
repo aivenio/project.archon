@@ -8,6 +8,12 @@
 
 <div align = "justify">
 
+## Getting Started
+
+The project requires setting up a PostgreSQL database (v18.1 or higher is recommended) in the structure provided under the
+microservices that is required by the enduser. Please refer to the setup documentation of each individual project for a detailed
+setup guide.
+
 ## Project Disclaimer
 
 The project is designed to work along with various microservices that are available at [aivenio](https://github.com/aivenio),
