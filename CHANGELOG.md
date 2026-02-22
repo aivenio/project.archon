@@ -1,32 +1,57 @@
-# Changelog
+<div align = "center">
 
-<p align = "justify">All notable changes to this <code><b>repository</b></code> will be documented here. The format is based on <a href = "https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a href = "https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+# CHANGELOG
+
+</div>
 
 <div align = "justify">
 
-## [v0.1.3](https://github.com/ZenithClown/ai-ml-project-template/releases/tag/v0.1.3) - Logging Feature
+All notable changes to this *PostgreSQL DB Management* project will be documented in this file. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [`semver`](https://semver.org/) styling.
 
-Minor bug fixes and enhancements. In addition, a new feature with getting started on logging is added with a minimal
-configuration setup.
+## Release Note(s)
 
-## [v0.1.2](https://github.com/ZenithClown/ai-ml-project-template/releases/tag/v0.1.2) - Minor Bug Fixes
+The release notes are documented, the list of changes to each different release are documented. The `major.minor` are indicated
+under `h3` tags, while the `patch` and other below identifiers are listed under `h4` and subsequent headlines. The legend for
+changelogs are provided in the detail pane, while the version wise note is as available below.
 
-Minor Bug Fixes:
- * Moved *jupyter notebooks* under [examples](./examples/) directory,
- * Added [README.md](./utilities/README.md) for utilities directory, TODO add featured submodules link.
+<details>
+<summary>Click Here to View Legend</summary>
 
-## [v0.1.1](https://github.com/ZenithClown/ai-ml-project-template/releases/tag/v0.1.1) : Fully Functional & Minimal Template
+<p><small>
+<ul style = "list-style-type:circle">
+  <li>✨ - <b>Major Feature</b> : something big that was not available before.</li>
+  <li>🎉 - <b>Feature Enhancement</b> : a miscellaneous minor improvement of an existing feature.</li>
+  <li>🛠️ - <b>Patch/Fix</b> : something that previously didn't work as documented should now work.</li>
+  <li>🐛 - <b>Bug/Fix</b> : a bug in the code was resolved and documented.</li>
+  <li>⚙️ - <b>Code Efficiency</b> : an existing feature now may not require as much computation or memory.</li>
+  <li>💣 - <b>Code Refactoring</b> : a breakable change often associated with `major` version bump.</li>
+</ul>
+</small></p>
 
-Minimal AI/ML project template with minimal requirements and settings file. An useful boilerplate ipython notebook file is provided to quickly get-started with exploratory data analysis and model development. This version mainly focuses on:
- * 📃 Documentation Update: updated project readme, and added how to get started with the repository.
- * 🎉 iPython Notebook: an updated boilerplate that adheres to minimal exploratory data analysis and model development.
+</details><br>
 
-## [v0.1.0-beta](https://github.com/ZenithClown/ai-ml-project-template/releases/tag/v0.1.0-beta) : BETA/Preview Release
+### Anemo Venti `v1` Release Notes
 
-A template for quickly starting a machine learning, artificial intelligence or data science project. The repository contains all necessary files and structure that might be used in a project. This pre-release contains the following:
- 1. Seperate directory structure for safe keeping [data](data) and [output](output) from code files.
- 2. [Notebooks](notebooks) directory can be used for storing Jupyter Notebooks.
- 3. Seperate [src](src) directory that contains [agents](src/agents/), [engine](src/engine/) and [models](src/models/) for configuring any reinforcement learning project. This directory (if not required) can be removed.
- 4. The [static](static) and [utilities](utilities) can be used to store additional files, while [logs](logs) is an essential files for tracking code progress.
+The first stable version focuses on providing a backbone structure to integrate the microservices available in AivenIO and
+to provide CI/CD functionalities to auto update data based on a selected interval or other relevant triggers.
+
+#### Release `v1.1.0` | 2026.02.22
+
+Minor bug fixes and patched existing functionalities. Workflow is tested and passing, the details of the version are as
+follows:
+
+  * ⚙️ Created a database controller object that handles all types of database operation as per requirement,
+  * ✨ Provided the ability to switch between `SQLAlchemy` context manager and `pandas` to fetch or insert data into the
+    underlying table.
+
+#### Release `v1.0.0` | 2026.02.22
+
+Initial stable version that brings in the functionality to auto update the FOREX rates in MacroDB schema. The function is
+acquired from ``forexrates`` which can now work separately from the project.
+
+  * ✨ Create function and workflow to get FOREX rates data and update to the underlying table,
+  * ⚙️ All the code commits from the repository are added, thus the history of the file is maintained and unrelated histories
+    are merged in a separate branch with check completes.
 
 </div>
