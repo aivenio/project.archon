@@ -26,43 +26,27 @@ import datetime_ as dt_ # cloned using git, ./dtutils
 import forexrates # get the module from repository root
 
 from config import set_logger
-from config import create_engine
+from config import DatabaseController
 
-def get_dates(
-        engine : sa.Engine,
-        logger : object,
-        tablename : str = "common.forex_rate_tx",
-        datecolumn : str = "effective_date"
-    ) -> List[dt.date]:
+def get_dates(controller : object, logger : object) -> List[dt.date]:
     """
     Get date range on which the :mod:`forexrates` iterate to fetch
     the result, this uses custom library, check module documentation
     for more details.
 
-    :type  engine: sa.Engine
-    :param engine: Instance of SQLAlchemy engine object, or compatible
-        objects that can be called like ``.connect()`` using a
-        context manager. The function is tested with SQLAlchemy, and
-        other libraries are not checked.
+    :type  controller: object
+    :param controller: Database controller object, that can be used to
+        do CRUD operations. Check config module for more information.
 
     :type  logger: object
     :param logger: Instance of logger object to log into a specified
         file, check logger configuration in documentation.
-
-    :type  tablename: str
-    :param tablename: Table name from which the last available date
-        is to be fetched, defaults to MacroDB schema design (check
-        https://github.com/aivenio/macrodb) - ``common.forex_rate_tx``.
-
-    :type  datecolumn: str
-    :para, datecolumn: Date column in the table for which the last
-        available day is fetched, defaults to ``effective_date``.
     """
 
-    statement = f"SELECT MAX({datecolumn}) FROM {tablename}"
-
-    with engine.connect() as connection:
-        start = connection.execute(sa.text(statement)).fetchone()[0]
+    start = controller.get_data(
+        query = "SELECT MAX(effective_date) FROM common.forex_rate_tx",
+        fetchone = True, useexecute = True
+    )
 
     end =  dt.datetime.now().date() - dt.timedelta(days = 1)
     
@@ -86,22 +70,16 @@ if __name__ == "__main__":
 
     forexlogger = logging.getLogger("FOREX Rates Logger")
 
-    # get configurations for database connection elements, and build
-    DATABASE = os.environ["AIVENIO_MACRODB_DATABASE"]
-    HOSTNAME = os.environ["AIVENIO_MACRODB_HOSTNAME"]
-    PASSWORD = os.environ["AIVENIO_MACRODB_PASSWORD"]
-    PORTNAME = os.environ["AIVENIO_MACRODB_PORTNAME"]
-    USERNAME = os.environ["AIVENIO_MACRODB_USERNAME"]
-
-    engine = create_engine(
-        host = HOSTNAME, port = PORTNAME,
-        user = USERNAME, password = PASSWORD,
-        database = DATABASE, verbose = False
+    dbobject = DatabaseController(
+        hostname = os.environ["AIVENIO_MACRODB_HOSTNAME"],
+        portname = os.environ["AIVENIO_MACRODB_PORTNAME"],
+        username = os.environ["AIVENIO_MACRODB_USERNAME"],
+        password = os.environ["AIVENIO_MACRODB_PASSWORD"],
+        database = os.environ["AIVENIO_MACRODB_DATABASE"]
     )
 
-
     # use the utility function to get the dates, log information
-    dates = get_dates(engine = engine, logger = forexlogger)
+    dates = get_dates(engine = dbobject, logger = forexlogger)
 
     # use the forexrates module to fetch the data from the api
     data = [
@@ -117,15 +95,8 @@ if __name__ == "__main__":
         index = "exchange_rate", verbose = True
     )
     dataframe["data_source_id"] = "ERAPI"
-
-    with engine.connect() as connection:
-        metadata = sa.Table(
-            "forex_rate_tx", sa.MetaData(schema = "common"),
-            autoload_with = connection
-        )
-
-        connection.execute(
-            metadata.insert(),
-            dataframe.to_dict(orient = "records")
-        )
-        connection.commit()
+    dbobject.insert_data(
+        dataframe = dataframe,
+        tablename = "forex_rate_tx",
+        schemaname = "common"
+    )
