@@ -11,7 +11,7 @@ import logging.config
 
 import sqlalchemy as sa
 
-def setLogger(configfile : str, outfile : str = None) -> None:
+def set_logger(configfile : str, outfile : str = None) -> None:
     """
     Setup a logger with pre-built configurations that can be used and
     extended by any endpoints to capture data update, deletion and
@@ -43,7 +43,7 @@ def setLogger(configfile : str, outfile : str = None) -> None:
     return
 
 
-def createEngine(
+def create_engine(
         host : str,
         port : int,
         user : str,
@@ -70,7 +70,7 @@ def createEngine(
         the database, check https://docs.sqlalchemy.org/en/14/dialects/.
     """
 
-    setLogger(configfile = "./config/logging.yaml", outfile = "./logs/main.log")
+    set_logger(configfile = "./config/logging.yaml", outfile = "./logs/main.log")
     logger = logging.getLogger("DB Connection")
 
     logging.info(f"Executing Function to Connect to {database}")
