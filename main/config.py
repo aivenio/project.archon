@@ -4,12 +4,14 @@
 A Set of Configuration Function(s) for Main Files
 """
 
+import os
 import yaml
+import logging
 import logging.config
 
 import sqlalchemy as sa
 
-def setLogger(configfile : str) -> None:
+def setLogger(configfile : str, outfile : str = None) -> None:
     """
     Setup a logger with pre-built configurations that can be used and
     extended by any endpoints to capture data update, deletion and
@@ -18,9 +20,25 @@ def setLogger(configfile : str) -> None:
     :type  configfile: str
     :param configfile: Path to config file, this function uses PyYAML
         configuration file, check documentation for more information.
+
+    :type  outfile: str
+    :param outfile: Path to output log file, if not provided, the
+        default configuration file is used.
     """
 
     config = yaml.safe_load(open(configfile, "r").read())
+
+    # ? override output logging file if required
+    if outfile:
+        config["handlers"]["file"]["filename"] = outfile
+
+    # ? override outfile variable, also can fetch from configfile
+    outfile = config["handlers"]["file"]["filename"]
+
+    if not os.path.exists(outfile):
+        print(f"Creating Log File: {outfile}")
+        open(outfile, "w", encoding = "utf-8").close() # write blank file
+
     logging.config.dictConfig(config)
     return
 
@@ -31,7 +49,6 @@ def createEngine(
         user : str,
         password : str,
         database : str,
-        logger :object,
         verbose : bool = True,
         sadialect : str = "postgresql+psycopg"
     ) -> sa.Engine:
@@ -44,10 +61,6 @@ def createEngine(
     All the required values are self-explanatory (todo), other required
     (or optional) arguments are as below:
 
-    :type  logger: object
-    :param logger: A logger object that prints information to the
-        logger file, check module documentation.
-
     :type  verbose: bool
     :param verbose: Print connection and other details to console,
         in addition to the logger output.
@@ -57,6 +70,11 @@ def createEngine(
         the database, check https://docs.sqlalchemy.org/en/14/dialects/.
     """
 
+    setLogger(configfile = "./config/logging.yaml", outfile = "./logs/main.log")
+    logger = logging.getLogger("DB Connection")
+
+    logging.info(f"Executing Function to Connect to {database}")
+
     engine = sa.create_engine(
         f"{sadialect}://{user}:{password}@{host}:{port}/{database}"
     )
@@ -64,14 +82,14 @@ def createEngine(
     try:
         engine.connect()
     except Exception as err:
-        message = f"Cannot connect to database. Error: {err}"
+        message = "Cannot connect to the Database."
 
         if verbose:
             print(message)
 
         logger.critical(message)
     else:
-        message = f"Connection established to {database}"
+        message = "Connection Established."
 
         if verbose:
             print(message)
