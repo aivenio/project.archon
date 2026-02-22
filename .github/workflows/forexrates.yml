@@ -31,6 +31,7 @@ jobs:
           git clone https://gist.github.com/ZenithClown/d2dd294c5f528459e16b139c04c0b182.git dtutils
 
       - name: Execute Python Script to Update FOREX Data
+        continue-on-error: true
         env:
           AIVENIO_MACRODB_DATABASE: ${{ secrets.AIVENIO_MACRODB_DATABASE }}
           AIVENIO_MACRODB_HOSTNAME: ${{ secrets.AIVENIO_MACRODB_HOSTNAME }}
@@ -38,7 +39,12 @@ jobs:
           AIVENIO_MACRODB_PORTNAME: ${{ secrets.AIVENIO_MACRODB_PORTNAME }}
           AIVENIO_MACRODB_USERNAME: ${{ secrets.AIVENIO_MACRODB_USERNAME }}
           EXCHANGERATES_IO_API_KEY: ${{ secrets.EXCHANGERATES_IO_API_KEY }}
-        run: python main/forexrates_dbupdate.py
+        run: |
+          echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting to update FOREX Rates." >> status.log;
+
+          python main/forexrates_dbupdate.py || {
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] Failed to Execute, check DEBUG Logs." >> status.log;
+          }
 
       - name: Commit Logs to the New File
         run: |
