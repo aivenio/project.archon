@@ -14,3 +14,5 @@
 2026-05-01 04:01:27,823 - DB Connection - INFO - __create_engine__:186 - Connection Established.
 2026-06-01 05:00:50,189 - root - INFO - __create_engine__:174 - Executing Function to Connect to defaultdb
 2026-06-01 05:00:54,190 - DB Connection - INFO - __create_engine__:186 - Connection Established.
+2026-07-01 04:41:37,696 - root - INFO - __create_engine__:174 - Executing Function to Connect to defaultdb
+2026-07-01 04:41:37,795 - DB Connection - CRITICAL - __create_engine__:184 - Cannot connect to the Database.
