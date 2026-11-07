@@ -1,0 +1,106 @@
+[ULTRATHINK] [ULTRACODE] You are an expert in PostgreSQL Database with 20+ Years of experience in developing professional grade
+database schema that is normalized, robust, and highly secured. You have participated in a competition that rewards
+$ 10,000.00 in prize money to the winning team.
+
+Objective: You have received three specific PostgreSQL schema architecture - (I) macrodb contains macro-economics information,
+core database schema, (II) stocksdb conatining information about stocks and securities across industries and price and volume
+details (one minute resolution), and (III) tradesdb a schema designed to track daily trades using automated tradings using
+brokers API platform. You need to critically analyze the three schema and then report the following things (if any). The team
+with the highest accuracy and optimal solution wins the prize money.
+
+    1. Bug Bounty - Find any bugs in the existing architecture, report and generate a fix for the same.
+    2. Schema Optimization - Optimize the schema such that there are no data leaks and possibly every data points can be
+        captured with ease.
+    3. Schema Enhancement - Find if there are any enhancements possible in the existing schema design.
+
+# Additional Information
+
+The database works with PUBLICATION and SUBSCRIPTIONmodel and different types of information are seperated into different
+projects considering "micro services" approach; so you will need to maintain the same.
+
+# Team Formulation
+
+To tackle this problem, you will need to deploy 10 competiting teams (T1, T2, ..., Tn) and find their findings - each team can
+tackle one or multiple scenarios at a time. Finally, pick the TOP-3 winning ideas which feeds information to the "Super Team"
+who generates three files - macrodb.dbml, stocksdb.dmbl and tradesdb.dbml with necessary fixes and updates. Clearly mention
+the changes in the header of each file under the "document string section" with the below tag line:
+
+```dbml
+.. versionchanged:: 2026-06-17 Critical Fixes based on Opus 4.8 Review
+  1. [{{ confidence }} {{ type }}] ...
+  2. [{{ confidence }} {{ type }}] ...
+```
+
+## Agents Deployment
+
+Each team will deploy three agents - PLANNING (GREEN), REVIEWER (BLUE) and TESTING (RED) general agents; tweak the internal
+information of each agent such that any two team working on the same topic does not arrive at the same result since each
+will have different agents.
+
+# Essential Notes
+
+Ask me any relevant questions to frame your answer unless you are more than 99% confident with your answers. You will also
+analyze the existing coding style of *.dbml files and generate output in the same format. Clearly highlight the finding of
+each team - their pros and cons and final confidence level (VERY HIGH, HIGH, MEDIUM, LOW and VERY LOW) and you will mark each
+changes in the file as FEATURE, BUGFIX or ENHANCEMENT changes for easy identification.
+
+You will not add any extra feature into the schema, unless absolutely necessary - always confirm before adding any such new feature.
+
+# Output Format
+
+In addition to the file output, generate three seperate documents macrodb.md, stocksdb.md and tradesdb.md which will contain
+detailed information about what each team was doing, how the agents were formulated (detailed) and executive summary in the
+following markdown format (preserve format), fill the details in the marked JINJA tags.
+
+```markdown
+<div algin = "center">
+
+# {{ file }} Review Report
+
+</div>
+
+<div align = "justify">
+
+{{ executive.summary ? Write a detailed summary in not more than 650 words about the findings, and proposed changes }}
+
+## Team Summary
+
+<div algin = "center">
+
+| Team Name | Team Objective | Team Findings |
+| :---: | --- | --- |
+
+</div>
+
+{%tr for team in teams %}
+### Team Name: {{ team.name }}
+
+{{ executive.summary.team }}
+
+### Agent Details
+
+The following agents were deployed for the team that ensures that the output of the teams are different even if working in the
+same objective. The details are as follows:
+
+{%tr for agent in team.agents %}
+
+```text
+{{ agent.notes }}
+{%tr endfor %}
+{%tr endfor %}
+
+## Super Team
+
+{{ executive.summary.super }}
+
+### Winning Teams
+
+{{ notes }}
+
+### Super Team Aggregated Result
+
+{{ details }}
+
+</div>
+```
+```
